@@ -1,0 +1,20 @@
+[package]
+name = "rust_rbe_demo"
+version = "0.1.0"
+edition = "2018"
+
+[dependencies]
+num_cpus = "1.0"
+
+[workspace.metadata.raze]
+# The path at which to write output files.
+workspace_path = "//cargo"
+package_aliases_dir = "crates"
+rust_rules_workspace_name = "rules_rust"
+
+targets = [
+    "x86_64-unknown-linux-gnu",
+]
+
+genmode = "Remote"
+default_gen_buildrs = true

@@ -1,0 +1,28 @@
+#
+# BuildBuddy Remote Linux build flags.
+# Invoke with `bazel test //... --config=remote-linux`
+#
+# To perform a local build, just run `bazel test //...`
+#
+# This uses the Google RBE default image and C++ toolchain.
+#
+
+build --tls_client_certificate=tools/buildbuddy-cert.pem
+build --tls_client_key=tools/buildbuddy-key.pem
+
+build:remote-linux --bes_results_url=https://app.buildbuddy.io/invocation/
+build:remote-linux --bes_backend=grpcs://cloud.buildbuddy.io
+build:remote-linux --remote_cache=grpcs://cloud.buildbuddy.io
+build:remote-linux --remote_timeout=3600
+build:remote-linux --jobs=50
+build:remote-linux --incompatible_enable_cc_toolchain_resolution
+
+#
+# Specify the Docker image and C++ toolchain.
+#
+build:remote-linux --host_platform=//tools:docker_image_platform
+build:remote-linux --platforms=//tools:docker_image_platform
+build:remote-linux --extra_toolchains=@llvm_toolchain//:cc-toolchain-linux
+build:remote-linux --define=EXECUTOR=remote
+build:remote-linux --remote_executor=grpcs://cloud.buildbuddy.io
+build:remote-linux --incompatible_strict_action_env=true

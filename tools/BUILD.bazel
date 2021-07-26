@@ -1,0 +1,29 @@
+platform(
+    name = "cargo_raze_docker_image_platform",
+    constraint_values = [
+        "@bazel_tools//platforms:x86_64",
+        "@bazel_tools//platforms:linux",
+        "@bazel_tools//tools/cpp:clang",
+    ],
+    exec_properties = {
+        "OSFamily": "Linux",
+        # This Dockerfile:
+        # https://github.com/grafica/build/blob/22524d64814750ba01d6b4df61ef5d3750747c5e/ubuntu_20_04_cargo_raze/Dockerfile
+        "container-image": "docker://docker.io/sayrer/ubuntu_20_04_clang_cmake:2021_03_26k",
+    },
+)
+
+platform(
+    name = "docker_image_platform",
+    constraint_values = [
+        "@bazel_tools//platforms:x86_64",
+        "@bazel_tools//platforms:linux",
+        "@bazel_tools//tools/cpp:clang",
+    ],
+    exec_properties = {
+        "OSFamily": "Linux",
+        # This Dockerfile:
+        # https://github.com/grafica/build/blob/22524d64814750ba01d6b4df61ef5d3750747c5e/ubuntu_20_04_bazel_with_cc_toolchain/Dockerfile
+        "container-image": "docker://docker.io/sayrer/ubuntu_for_bazel_with_cc_toolchain:with_python_and_xcb_2021_07_08b",
+    },
+)

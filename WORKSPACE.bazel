@@ -1,0 +1,99 @@
+workspace(name = "com_grafica_rust_rbe_demo")
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
+http_archive(
+    name = "bazel_skylib",
+    urls = [
+        "https://github.com/bazelbuild/bazel-skylib/releases/download/1.0.3/bazel-skylib-1.0.3.tar.gz",
+        "https://mirror.bazel.build/github.com/bazelbuild/bazel-skylib/releases/download/1.0.3/bazel-skylib-1.0.3.tar.gz",
+    ],
+    sha256 = "1c531376ac7e5a180e0237938a2536de0c54d93f5c278634818e0efc952dd56c",
+)
+load("@bazel_skylib//:workspace.bzl", "bazel_skylib_workspace")
+bazel_skylib_workspace()
+
+http_archive(
+    # Make these rules available under the name `@rules_rust`
+    name = "rules_rust",
+
+    # If you omit this, Bazel will download the archive anyway, and print
+    # what the sum of the download is.
+    sha256 = "e28af3e09387784688a5a4faf1d247176c732fffbdc1403f215c817bce2b9d21",
+
+    # After unpacking the tar.gz file, reference the rules starting from
+    # within this leading path.
+    strip_prefix = "rules_rust-c9345d33123e49928a021f75725da2f5b609f660",
+
+    # A list of URLs the archive is available from.
+    urls = [
+        # Main branch as of 2021-07-01
+        "https://github.com/bazelbuild/rules_rust/archive/c9345d33123e49928a021f75725da2f5b609f660.tar.gz",
+    ],
+)
+
+load("@rules_rust//rust:repositories.bzl", "rust_repositories")
+
+rust_repositories(
+    edition = "2018",
+    version = "1.53.0",
+)
+
+git_repository(
+    name = "cargo_raze",
+    commit = "98a782be69f17fa31dff529a7a892e8834327362",
+    remote = "https://github.com/GregBowyer/cargo-raze",
+    shallow_since = "1619223674 -0700"
+)
+
+load("@cargo_raze//:repositories.bzl", "cargo_raze_repositories")
+
+cargo_raze_repositories()
+
+load("@cargo_raze//:transitive_deps.bzl", "cargo_raze_transitive_deps")
+
+cargo_raze_transitive_deps()
+
+load("//cargo:crates.bzl", "raze_fetch_remote_crates")
+
+raze_fetch_remote_crates()
+
+#
+# LLVM toolchain.
+#
+git_repository(
+    name = "com_grail_bazel_toolchain",
+    # Master as of 2021-07-01
+    commit = "76ce37e977a304acf8948eadabb82c516320e286",
+    remote = "https://github.com/grailbio/bazel-toolchain",
+    shallow_since = "1621296040 -0700"
+)
+
+load("@com_grail_bazel_toolchain//toolchain:deps.bzl", "bazel_toolchain_dependencies")
+
+bazel_toolchain_dependencies()
+
+load("@com_grail_bazel_toolchain//toolchain:rules.bzl", "llvm_toolchain")
+
+#
+# A repository containing sysroot files and Dockerfiles.
+# The reference to the Docker image is in tools/BUILD.bazel
+#
+git_repository(
+    name = "grafica_build",
+    commit = "6c32169ca6551154710db0a4bc35b2a5b1459c2a",
+    remote = "https://github.com/grafica/build",
+    shallow_since = "1625780277 -0700"
+)
+
+llvm_toolchain(
+    name = "llvm_toolchain",
+    llvm_version = "12.0.0",
+    # TODO: had to turn off this sysroot because of xcb
+    sysroot = {"linux": "@grafica_build//sysroots/debian_sid_amd64-sysroot:sysroot"},
+)
+
+load("@llvm_toolchain//:toolchains.bzl", "llvm_register_toolchains")
+
+llvm_register_toolchains()

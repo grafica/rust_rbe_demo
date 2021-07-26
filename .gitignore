@@ -1,0 +1,5 @@
+/target
+
+# BuildBuddy credentials
+tools/buildbuddy-cert.pem
+tools/buildbuddy-key.pem
