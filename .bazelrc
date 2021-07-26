@@ -1,11 +1,5 @@
 #
 # BuildBuddy Remote Linux build flags.
-# Invoke with `bazel test //... --config=remote-linux`
-#
-# To perform a local build, just run `bazel test //...`
-#
-# This uses the Google RBE default image and C++ toolchain.
-#
 
 build --tls_client_certificate=tools/buildbuddy-cert.pem
 build --tls_client_key=tools/buildbuddy-key.pem
